@@ -8,11 +8,6 @@ const MONGO_URI = process.env.MONGO_URI;
 
 app.use(cors());
 app.use(express.json());
-module.exports = server;
-// connect to MongoDB
-mongoose.connect(MONGO_URI)
-    .then(() => console.log('MongoDB connected!'))
-    .catch(err => console.error('MongoDB error:', err));
 
 // only connect to MongoDB if not in test mode
 if (process.env.NODE_ENV !== 'test') {
@@ -32,7 +27,7 @@ const User = mongoose.model('User', userSchema);
 
 // routes
 app.get('/', (req, res) => {
-    res.json({ message: 'nginx + Node + MongoDB running!', status: 'ok' });
+    res.json({ message: 'Node + MongoDB running!', status: 'ok' });
 });
 
 app.get('/health', (req, res) => {
@@ -54,9 +49,12 @@ app.post('/users', async (req, res) => {
 
 app.delete('/users/:id', async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
-    res.json({ message: 'User deleted' });
+    res.json({ message: 'deleted' });
 });
 
-app.listen(PORT, () => {
+// server defined BEFORE module.exports!
+const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = server;   // ← now server exists!
