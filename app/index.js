@@ -8,11 +8,18 @@ const MONGO_URI = process.env.MONGO_URI;
 
 app.use(cors());
 app.use(express.json());
-
+module.exports = server;
 // connect to MongoDB
 mongoose.connect(MONGO_URI)
     .then(() => console.log('MongoDB connected!'))
     .catch(err => console.error('MongoDB error:', err));
+
+// only connect to MongoDB if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+    mongoose.connect(MONGO_URI)
+        .then(() => console.log('MongoDB connected!'))
+        .catch(err => console.error('MongoDB error:', err));
+}
 
 // User schema
 const userSchema = new mongoose.Schema({
